@@ -927,6 +927,22 @@ TEST_F(UnitContainer, make_unit)
 	EXPECT_EQ(meter_t(5), dist);
 }
 
+namespace test {
+
+// Test types for https://github.com/nholthaus/units/issues/299
+struct Foo {
+	template<typename Unit>
+	Foo operator+(const unit_t<Unit>&) const {
+		return Foo{};
+	}
+};
+
+struct Bar : Foo {
+	// operator+ is implicitly inherited
+};
+
+}
+
 TEST_F(UnitContainer, unitTypeAddition)
 {
 	// units
@@ -963,6 +979,9 @@ TEST_F(UnitContainer, unitTypeAddition)
 
 	d = 1.0 + scalar_t(1.0);
 	EXPECT_NEAR(2.0, d, 5.0e-6);
+
+	test::Bar bar;
+	bar + a_m;
 }
 
 TEST_F(UnitContainer, unitTypeUnaryAddition)
